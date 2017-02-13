@@ -1,3 +1,7 @@
+#include <iostream>
+#include <exception>
+#include <typeinfo>
+#include <stdexcept>
 
 #include "opencv2/objdetect/objdetect.hpp"    
 #include "opencv2/imgproc/imgproc.hpp"
@@ -12,9 +16,10 @@
 
 using namespace cv;
 using namespace std;
+using namespace Scalar;
 
 
-int face( char *argv[],int argc );
+int Humanface( int argc,char* argv[]);
 
 /* Variables for face center and face radius */
 
@@ -39,50 +44,110 @@ static void help()
         "\t\t(before running it, *roughly* mark the areas to segment on the image)\n"
         "\t  (before that, roughly outline several markers on the image)\n";
 }
-
+//Mat  calss, Point Class Object creation
 Mat img0,markerMask,markerMask2, img, img2,img1,markerprev,imgprev;
-
 Point prevPt(-1, -1);
 
 /* onMouse for the second part of the code */
-static void onMouse( int event, int x, int y, int flags, void* )
+static void onMouse( int event, int x, int y, int flags)
 {
-    if( x < 0 || x >= img2.cols || y < 0 || y >= img2.rows )
+     Point pt(x, y),prevPt;
+     try{
+     if( x < 0 || x >= img2.cols || y < 0 || y >= img2.rows )
         return;
+     }catch (const exception& ex) {     
+	     cerr << "\n Mat Object Exception \n" << endl;
+     }
     if( event == CV_EVENT_LBUTTONUP || !(flags & CV_EVENT_FLAG_LBUTTON) )
-        prevPt = Point(-1,-1);
+	try{    
+        prevPt = pt(-1,-1);
+	}catch (const exception& ex) {     
+	 cerr << "\n Exception:Copy Constructo,Point Class \n" << endl;
+     }
     else if( event == CV_EVENT_LBUTTONDOWN )
-        prevPt = Point(x,y);
+        try{ 
+        prevPt = pt(x,y);
+	}catch (const exception& ex) {     
+	 cerr << "\n Exception:Copy Constructo,Point Class \n" << endl;
+       }
     else if( event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON) )
-    {
-        Point pt(x, y);
+    { 
+    
+	    try{
         if( prevPt.x < 0 )
+		throw prevPt.x;
+	    }catch(...){
+             exception_ptr exptr = current_exception();
+             cerr <<(exptr ? p.__cxa_exception_type()->name() : "null") << endl;
+           }
+	    try{
             prevPt = pt;
-        line( markerMask2, prevPt, pt, Scalar::all(255), 5, 8, 0 );
-        line( img2, prevPt, pt, Scalar::all(255), 5, 8, 0 );
-        prevPt = pt;
+	    }catch (const exception& ex) {     
+	     cerr << "\n Exception:Copy Constructo,Point Class \n" << endl;
+            }
+	   
+        line( markerMask2, prevPt, pt, all(255), 5, 8, 0 );
+	    cout << "Constructor of Line " << endl;
+        line( img2, prevPt, pt, all(255), 5, 8, 0 );
+	    cout << "Constructor of Line " << endl;
+        try{
+            prevPt = pt;
+	    }catch (const exception& ex) {     
+	     cerr << "\n Exception:Copy Constructo,Point Class \n" << endl;
+            }
         imshow("Image-RB", img2);
+	    cout << "Constructor of Imageshow " << endl;
     }
 }
 
 /* onMouse for the first part of the code */
-static void onMouseb( int event, int x, int y, int flags, void* )
+static void onMouseb( int event, int x, int y, int flags)
 {
-    if( x < 0 || x >= img.cols || y < 0 || y >= img.rows )
+    Point prevPtb;
+    Point pt(x, y);
+	try{
+	if( x < 0 || x >= img.cols || y < 0 || y >= img.rows )
         return;
+	}catch (const exception& ex) {     
+	     cerr << "\n Mat Object Exception \n" << endl;
+       }
     if( event == CV_EVENT_LBUTTONUP || !(flags & CV_EVENT_FLAG_LBUTTON) )
-        prevPt = Point(-1,-1);
+        try{
+	    prevPtb = Point(-1,-1);
+	}catch (const exception& ex) {     
+	     cerr << "\n Mat Object Exception \n" << endl;
+       }
     else if( event == CV_EVENT_LBUTTONDOWN )
-        prevPt = Point(x,y);
+        try{
+	    prevPtb = Point(x,y);
+	}catch (const exception& ex) {     
+	     cerr << "\n Mat Object Exception \n" << endl;
+       }
     else if( event == CV_EVENT_MOUSEMOVE && (flags & CV_EVENT_FLAG_LBUTTON) )
     {
-        Point pt(x, y);
-        if( prevPt.x < 0 )
-            prevPt = pt;
-        line( markerMask, prevPt, pt, Scalar::all(255), 5, 8, 0 );
-        line( img, prevPt, pt, Scalar::all(255), 5, 8, 0 );
-        prevPt = pt;
+        try{
+        if( prevPtb.x < 0 )
+		throw prevPtb.x;
+	    }catch(...){
+             exception_ptr exptr = current_exception();
+             cout <<(exptr ? p.__cxa_exception_type()->name() : "null") << endl;
+           }
+	    try{
+            prevPtb = pt;
+	    }catch (const exception& ex) {     
+	    cerr << "\n Exception:Copy Constructo,Point Class \n" << endl;
+            }  
+        line( markerMask, prevPtb, pt, all(255), 5, 8, 0 );
+	    cout << "Constructor of Line " << endl;
+        line( img, prevPtb, pt, all(255), 5, 8, 0 );
+	    cout << "Constructor of Line " << endl;
+        try{
+		    prevPtb = pt;
+	 }catch (const exception& ex) {     
+	 cerr << "\n Exception:Copy Constructo,Point Class \n" << endl;
+         }  
         imshow("image", img);
+	    cout << "Constructor of Imgshow " << endl;
        
     }
 }
@@ -92,14 +157,22 @@ static void onMouseb( int event, int x, int y, int flags, void* )
 int main( int argc, char** argv )
 {
     char* filename = argc >= 2 ? argv[1] : (char*)"fruits.jpg";
-    img0 = imread(filename, 1);
+        try{
+	img0 = imread(filename, 1);
+	}catch (const exception& ex) {     
+	    cerr << "\n Exception:Copy Constructo,imread Class \n" << endl;
+            }  
     Mat imgGray;
+    try{
     img0.copyTo(img);
+    }catch (const exception& ex) {     
+     cerr << "\n Image Object Exception \n" << endl;
+     }
     IplImage* moved= new IplImage(img0);
     char check1='n'; 
     
     
-    if( face(argv,argc))
+    if( Humanface(argv,argc))
     {
             //cout<<"FOUNDIN";
             //cout<<"Center : (" << (int)fc.x << " ," <<(int) fc.y << ") Radius:" <<fr; 
@@ -113,7 +186,7 @@ int main( int argc, char** argv )
             retinexopenCV(filename);
             strcpy(argv[1],"n.jpg");
             
-            if( face(argv,argc))
+            if( Humanface(argv,argc))
             {
                 //cout<<"FOUNDIN";
                 //cout<<"Center : (" << (int)fc.x << " ," <<(int) fc.y << ") Radius:" <<fr; 
@@ -135,16 +208,17 @@ int main( int argc, char** argv )
         {
             cout << "Couldn'g open image " << filename << ". Usage: watershed <image_name>\n";
             return 0;
-        }
-    
-   
-    
+        }   
         namedWindow( "image", 1 );
-    
-        img0.copyTo(img);
+        try{
+	    img0.copyTo(img);
+	}catch (const exception& ex) {     
+	     cout << "\n Img0 Object Exception \n" << endl;
+       }
         cvtColor(img, markerMask, CV_BGR2GRAY);
         cvtColor(markerMask, imgGray, CV_GRAY2BGR);
-        markerMask = Scalar::all(0);
+            
+	    markerMask = all(0);
    
         imshow( "image", img );
         waitKey(0); 
@@ -157,8 +231,11 @@ int main( int argc, char** argv )
         line( markerMask, cvPoint(img.cols/2,img.rows/4), cvPoint(img.cols/2,img.rows/2), Scalar::all(255), 5, 8, 0 );
         line( markerMask, cvPoint(img.cols-3,3), cvPoint(img.cols-3,4*img.rows/5), Scalar::all(255), 15, 8, 0 );
     
-    
+        try{
         Mat wshed(markerMask.size(), CV_8UC3);
+	}catch (const exception& ex) {     
+	     cout << "\n markerMask Object Exception \n" << endl;
+       }
         int firsttime=0;
         for(;;)
         {
@@ -175,7 +252,11 @@ int main( int argc, char** argv )
             
             if( (char)c=='m') 
             {      
-                markerMask.copyTo(markerprev);
+                try{
+		    markerMask.copyTo(markerprev);
+		}catch (const exception& ex) {     
+	     cout << "\n markerMask Object Exception \n" << endl;
+                }
                 if(firsttime==0)
                 {
                     line( img, cvPoint(3,3), cvPoint(3,4*img.rows/5), Scalar::all(255), 15, 8, 0 );
@@ -184,27 +265,44 @@ int main( int argc, char** argv )
                     firsttime++;
                 }         
                 img=  0.5*wshed  + 0.5*img; 
+		    try{
                 img.copyTo(imgprev); 
+		    }catch (const exception& ex) {     
+	            cout << "\n Img Object Exception \n" << endl;
+                    }
                 imshow("image",img);
                 c=cvWaitKey(0); 
             }   
             
             if((char)c=='u')
             {
-                markerprev.copyTo(markerMask);
+                try{
+		    markerprev.copyTo(markerMask);
+		}
+		    catch (const exception& ex) {     
+	            cout << "\n markerprev Object Exception \n" << endl;
+                    }
+		    try{
                 imgprev.copyTo(img);
+		    }
+		    catch (const exception& ex) {     
+	            cout << "\n markerprev Object Exception \n" << endl;
+                    }
                 imshow("image",img);
-                c=cvWaitKey(0); 
-  
-        
+                c=cvWaitKey(0);         
             }
         
 
         
             if( (char)c == 'r'  )
             {
-                markerMask = Scalar::all(0);
+                markerMask = all(0);
+		try{    
                 img0.copyTo(img);
+		}
+		    catch (const exception& ex) {     
+	            cout << "\n  markerMask Object Exception \n" << endl;
+                    }
                 imshow( "image", img );
                 c=cvWaitKey(0);
             }
@@ -219,9 +317,20 @@ int main( int argc, char** argv )
 
                 if( contours.empty() )
                    continue;
+		    try{
                 Mat markers(markerMask.size(), CV_32S);
-                Mat markers2(markerMask.size(), CV_32S);
-                markers = Scalar::all(0);
+		    }catch (const exception& ex) {     
+	     cerr << "\n markerMask Object Exception \n" << endl;
+                   }
+                try{
+		    Mat markers2(markerMask.size(), CV_32S);
+		}catch (const exception& ex) {     
+	     cerr << "\n markerMask2 Object Exception \n" << endl;
+                }
+		    try{
+                markers = all(0);
+		    }
+		    
                 int idx = 0;
                 for( ; idx >= 0; idx = hierarchy[idx][0], compCount++ )
                     drawContours(markers, contours, idx, Scalar::all(compCount+1), -1, 8, hierarchy, INT_MAX);
@@ -393,7 +502,7 @@ int main( int argc, char** argv )
                 {
                     cvDestroyWindow("O->okay,R->redo");
                     cvDestroyWindow("Press R to remark");
-                    markerMask = Scalar::all(0);
+                    markerMask = all(0);
                     continue;
                 }
                 
@@ -413,14 +522,21 @@ int main( int argc, char** argv )
     
 	Mat imgGray2;
 	img1=imread("Moved.jpg");
- 	
-
+ 	try{
 	img1.copyTo(img2);
+	}catch (const exception& ex) {     
+	     cout << "\n markerMask2 Object Exception \n" << endl;
+       }
     imshow("Moved",img1);
    
     cvtColor(img2, markerMask2, CV_BGR2GRAY);
     cvtColor(markerMask2, imgGray2, CV_GRAY2BGR);
-    markerMask2 = Scalar::all(0);
+	try{
+    markerMask2 = all(0);
+	}
+	catch (const exception& ex) {     
+	     cout << "\n markerMask2 Object Exception \n" << endl;
+       }
     Mat wshed2(markerMask2.size(), CV_8UC3);
     imshow( "Image-RB", img2 );
     setMouseCallback( "Image-RB", onMouse, 0 );
@@ -438,20 +554,45 @@ int main( int argc, char** argv )
 
         if( (char)c == 'r' )
         {
-            markerMask2 = Scalar::all(0);
+                try{
+		markerMask2 = all(0);
+		}catch (const exception& ex) {     
+	         cout << "\n markerMask2 Object Exception \n" << endl;
+               }
+            try{
             img1.copyTo(img2);
+	    }catch (const exception& ex) {     
+	     cout << "\n Object Exception \n" << endl;
+            }
             imshow( "Image-RB", img2 );
         }
         
         if( (char)c=='m') 
         {   
-            markerMask2.copyTo(markerprev);
+                try{
+		markerMask2.copyTo(markerprev);
+		}catch (const exception& ex) {     
+	     cout << "\n markerMask2 Object Exception \n" << endl;
+       }
             if(firsttime2==0)
             {
-                    line(img2,cvPoint(3*radius/2,3*radius/2-radius/3),cvPoint(3*radius/2,3*radius/2+3*radius/3),CV_RGB(255,255,255),13);
-	                line(img2,cvPoint(radius/6,3*radius/2-radius),cvPoint(radius/6,3*radius/2),CV_RGB(255,255,255),20);
-	                line(img2,cvPoint(3*radius-radius/6,3*radius/2-radius),cvPoint(3*radius-radius/6,3*radius/2),CV_RGB(255,255,255),20);  
-                    firsttime2++;
+                    try{
+		    line(img2,cvPoint(3*radius/2,3*radius/2-radius/3),cvPoint(3*radius/2,3*radius/2+3*radius/3),CV_RGB(255,255,255),13);
+		    }catch (const exception& ex) {     
+	            cerr << "\n Object Exception \n" << endl;
+                     }
+	            try{ 
+		    line(img2,cvPoint(radius/6,3*radius/2-radius),cvPoint(radius/6,3*radius/2),CV_RGB(255,255,255),20);
+		    }catch (const exception& ex) {     
+	            cerr << "\n markerMask2 Object Exception \n" << endl;
+                    }
+	            try{
+		    line(img2,cvPoint(3*radius-radius/6,3*radius/2-radius),cvPoint(3*radius-radius/6,3*radius/2),CV_RGB(255,255,255),20);  
+		    }catch (const exception& ex) {     
+	               cerr << "\n markerMask2 Object Exception \n" << endl;
+                    }
+			    firsttime2++;
+			    
             }         
             img2=  0.5*wshed2  + 0.5*img2; 
             img2.copyTo(imgprev); 
@@ -494,8 +635,17 @@ int main( int argc, char** argv )
       		//
             if( contours.empty() )
                 continue;
+		try{
             Mat markers2(markerMask2.size(), CV_32S);
-            markers2 = Scalar::all(0);
+	      }
+		catch (const exception& ex) {     
+	     cout << "\n markerMask2 Object Exception \n" << endl;
+            }
+		try{
+            markers2 = all(0);
+		}catch (const exception& ex) {     
+	     cout << "\n markerMask2 Object Exception \n" << endl;
+       }
             int idx = 0;
             for( ; idx >= 0; idx = hierarchy[idx][0], compCount++ )
                 drawContours(markers2, contours, idx, Scalar::all(compCount+1), -1, 8, hierarchy, INT_MAX);
@@ -598,10 +748,10 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     double scale, bool tryflip );
 
 int found=0;
-int face( char *argv[] ,int argc)
+int Humanface(int argc,char *argv[])
 {
    
-    CvCapture* capture = 0;
+    CvCapture* capture = NULL;
     Mat frame, frameCopy, image;
     const string scaleOpt = "--scale=";
     size_t scaleOptLen = scaleOpt.length();
@@ -622,25 +772,42 @@ int face( char *argv[] ,int argc)
     for( int i = 1; i < argc; i++ )
     {
         cout << "Processing " << i << " " <<  argv[i] << endl;
+	    try{
         if( cascadeOpt.compare( 0, cascadeOptLen, argv[i], cascadeOptLen ) == 0 )
+	   }catch (const exception& ex) {     
+	               cerr << "\n Object Exception \n" << endl;
+          }
+	    
         {
             cascadeName.assign( argv[i] + cascadeOptLen );
             cout << "  from which we have cascadeName= " << cascadeName << endl;
         }
+	 try{   
         else if( nestedCascadeOpt.compare( 0, nestedCascadeOptLen, argv[i], nestedCascadeOptLen ) == 0 )
+		 }catch (const exception& ex) {     
+	               cerr << "\n Object Exception \n" << endl;
+          }
         {
             if( argv[i][nestedCascadeOpt.length()] == '=' )
                 nestedCascadeName.assign( argv[i] + nestedCascadeOpt.length() + 1 );
             if( !nestedCascade.load( nestedCascadeName ) )
                 cerr << "WARNING: Could not load classifier cascade for nested objects" << endl;
         }
+	    try{
         else if( scaleOpt.compare( 0, scaleOptLen, argv[i], scaleOptLen ) == 0 )
+		 }catch (const exception& ex) {     
+	               cerr << "\n Object Exception \n" << endl;
+          }
         {
             if( !sscanf( argv[i] + scaleOpt.length(), "%lf", &scale ) || scale < 1 )
                 scale = 1;
             cout << " from which we read scale = " << scale << endl;
         }
+	    try{
         else if( tryFlipOpt.compare( 0, tryFlipOptLen, argv[i], tryFlipOptLen ) == 0 )
+		} catch (const exception& ex) {     
+	               cerr << "\n Object Exception \n" << endl;
+          }
         {
             tryflip = true;
             cout << " will try to flip image horizontally to detect assymetric objects\n";
@@ -651,7 +818,7 @@ int face( char *argv[] ,int argc)
         }
         else
             inputName.assign( argv[i] );
-    }
+    } //closed for
 
     if( !cascade.load( cascadeName ) )
     {
@@ -659,8 +826,11 @@ int face( char *argv[] ,int argc)
         help();
         return -1;
     }
-
+    try{
     if( inputName.empty() || (isdigit(inputName.c_str()[0]) && inputName.c_str()[1] == '\0') )
+    }catch (const exception& ex) {     
+	               cerr << "\n Object Exception \n" << endl;
+          }
     {
         capture = cvCaptureFromCAM( inputName.empty() ? 0 : inputName.c_str()[0] - '0' );
         int c = inputName.empty() ? 0 : inputName.c_str()[0] - '0' ;
@@ -692,7 +862,7 @@ int face( char *argv[] ,int argc)
             frame = iplImg;
             if( frame.empty() )
                 break;
-            if( iplImg->origin == IPL_ORIGIN_TL )
+            if( frame->origin == IPL_ORIGIN_TL )
                 frame.copyTo( frameCopy );
             else
                 flip( frame, frameCopy, 0 );
@@ -700,15 +870,14 @@ int face( char *argv[] ,int argc)
             detectAndDraw( frameCopy, cascade, nestedCascade, scale, tryflip );
 
             if( waitKey( 10 ) >= 0 )
-                goto _cleanup_;
+                FileImageImpl() ;
         }
 
         waitKey(0);
-
-_cleanup_:
-        cvReleaseCapture( &capture );
+        cvDestroyWindow("result");
+        return found;
     }
-    else
+	 else
     {
         cout << "In image read" << endl;
         if( !image.empty() )
@@ -720,11 +889,11 @@ _cleanup_:
         {
             /* assume it is a text file containing the
             list of the image filenames to be processed - one per line */
-            FILE* f = fopen( inputName.c_str(), "rt" );
-            if( f )
+            FILE* file = fopen( inputName.c_str(), "rt" );
+            if( file )
             {
                 char buf[1000+1];
-                while( fgets( buf, 1000, f ) )
+                while( fgets( buf, 1000, file ) )
                 {
                     int len = (int)strlen(buf), c;
                     while( len > 0 && isspace(buf[len-1]) )
@@ -743,17 +912,18 @@ _cleanup_:
                     {
                         cerr << "Aw snap, couldn't read image " << buf << endl;
                     }
-                }
-                fclose(f);
-            }
-        }
-    }
-
-    cvDestroyWindow("result");
-
-    return found;
+                } //while
+                fclose(file);
+            } //if file
+        }  //else if
+    }   // if image
     
+} //else
 }
+void FileImageImpl(){
+        cvReleaseCapture( &capture );
+}
+   
 
 void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     CascadeClassifier& nestedCascade,
